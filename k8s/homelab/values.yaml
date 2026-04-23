@@ -4,6 +4,12 @@
 # with TLS from the letsencrypt-cloudflare ClusterIssuer (DNS-01).
 # Bundled Postgres + Redis (isolated from the shared `postgres` namespace).
 # Storage: local-path (default k3s); PVCs pin pods to whichever node binds first.
+# Image: built locally from this fork, pushed to registry.ker4s.com:30095.
+
+image:
+  repository: registry.ker4s.com:30095/twenty
+  tag: homelab-v1
+  pullPolicy: IfNotPresent
 
 server:
   replicaCount: 1
