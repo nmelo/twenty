@@ -18,7 +18,8 @@ server:
   ingress:
     enabled: true
     className: traefik
-    acme: true
+    # acme:true hardcodes letsencrypt-prod — we use our cloudflare DNS-01 issuer instead
+    acme: false
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-cloudflare
     hosts:
