@@ -13,6 +13,9 @@ image:
 
 server:
   replicaCount: 1
+  # Pin to amd64 node; our images are single-arch amd64.
+  nodeSelector:
+    kubernetes.io/hostname: workbench
   resources:
     requests:
       cpu: 250m
@@ -46,6 +49,8 @@ server:
 
 worker:
   replicaCount: 1
+  nodeSelector:
+    kubernetes.io/hostname: workbench
   resources:
     requests:
       cpu: 250m
@@ -57,18 +62,27 @@ worker:
 db:
   enabled: true
   internal:
-    # Chart default tag (3.3-p2) is stale and does not exist on Docker Hub.
+    # Mirrored amd64 image in local registry (cluster has mixed arch; we pin
+    # workbench which is amd64-only).
     image:
-      repository: twentycrm/twenty-postgres-spilo
-      tag: v0.43.5
+      repository: registry.ker4s.com:30095/twenty-postgres-spilo
+      tag: v0.43.5-amd64
     persistence:
       enabled: true
       size: 20Gi
+    nodeSelector:
+      kubernetes.io/hostname: workbench
 
 redisInternal:
   enabled: true
+  image:
+    repository: registry.ker4s.com:30095/redis-stack-server
+    tag: 7.2.0-v10-amd64
+    pullPolicy: IfNotPresent
   persistence:
     enabled: false
+  nodeSelector:
+    kubernetes.io/hostname: workbench
 
 storage:
   type: local
