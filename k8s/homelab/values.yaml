@@ -57,6 +57,10 @@ worker:
 db:
   enabled: true
   internal:
+    # Chart default tag (3.3-p2) is stale and does not exist on Docker Hub.
+    image:
+      repository: twentycrm/twenty-postgres-spilo
+      tag: v0.43.5
     persistence:
       enabled: true
       size: 20Gi
