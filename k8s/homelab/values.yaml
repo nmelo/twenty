@@ -1,0 +1,63 @@
+# Helm values for deploying Twenty to the homelab k3s cluster.
+# Chart: packages/twenty-docker/helm/twenty
+# Installs into ns "twenty", exposed at https://twenty.ker4s.com via traefik
+# with TLS from the letsencrypt-cloudflare ClusterIssuer (DNS-01).
+# Bundled Postgres + Redis (isolated from the shared `postgres` namespace).
+# Storage: local-path (default k3s); PVCs pin pods to whichever node binds first.
+
+server:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2048Mi
+
+  ingress:
+    enabled: true
+    className: traefik
+    acme: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-cloudflare
+    hosts:
+      - host: twenty.ker4s.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: twenty-tls
+        hosts:
+          - twenty.ker4s.com
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    accessModes:
+      - ReadWriteOnce
+
+worker:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1024Mi
+    limits:
+      cpu: 2000m
+      memory: 2048Mi
+
+db:
+  enabled: true
+  internal:
+    persistence:
+      enabled: true
+      size: 20Gi
+
+redisInternal:
+  enabled: true
+  persistence:
+    enabled: false
+
+storage:
+  type: local
